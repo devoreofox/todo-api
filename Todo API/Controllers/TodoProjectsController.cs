@@ -7,30 +7,35 @@ namespace TodoAPI.Controllers
     [Route("api/list")]
     public class TodoProjectsController : ControllerBase
     {
+
+        private static readonly List<TodoProject> _projects = new();
+
         [HttpGet]
         public IActionResult Get()
         {
-            var projects = new List<TodoProject>
+            return Ok(_projects);
+        }
+
+        [HttpPost]
+        public IActionResult Post([FromBody] TodoProject project)
+        {
+            if (string.IsNullOrWhiteSpace(project.Name))
             {
-                new TodoProject
-                {
-                    Id = Guid.NewGuid(),
-                    Name = "Project 1",
-                    Description = "Description for project 1",
-                    CreatedAt = DateTimeOffset.UtcNow,
-                    UpdatedAt = DateTimeOffset.UtcNow
-                },
-                new TodoProject
-                {
-                    Id = Guid.NewGuid(),
-                    Name = "Project 2",
-                    Description = "Description for project 2",
-                    CreatedAt = DateTimeOffset.UtcNow,
-                    UpdatedAt = DateTimeOffset.UtcNow
-                }
+                return BadRequest("Project name is required.");
+            }
+
+            var newProject = new TodoProject
+            {
+                Id = Guid.NewGuid(),
+                Name = project.Name,
+                Description = project.Description ?? string.Empty,
+                CreatedAt = DateTimeOffset.UtcNow,
+                UpdatedAt = DateTimeOffset.UtcNow
             };
 
-            return Ok(projects);
+            _projects.Add(newProject);
+
+            return CreatedAtAction(nameof(Get), newProject);
         }
     }
 }
