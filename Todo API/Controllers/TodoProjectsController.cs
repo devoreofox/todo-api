@@ -35,7 +35,34 @@ namespace TodoAPI.Controllers
 
             _projects.Add(newProject);
 
-            return CreatedAtAction(nameof(Get), newProject);
+            return Created(nameof(Get), newProject);
+        }
+
+        [HttpPut("{id:guid}")]
+        public IActionResult Put(Guid id, [FromBody] TodoProject project)
+        {
+
+            var existingProject = _projects.FirstOrDefault(p => p.Id == id);
+            if (existingProject is null)
+            {
+                return NotFound();
+            }
+            if (string.IsNullOrWhiteSpace(project.Name))
+            {
+                return BadRequest("Project name is required.");
+            }
+
+            var updatedProject = existingProject with
+            {
+                Name = project.Name,
+                Description = project.Description ?? string.Empty,
+                Items = project.Items,
+                UpdatedAt = DateTimeOffset.UtcNow
+            };
+
+            var index = _projects.IndexOf(existingProject);
+            _projects[index] = updatedProject;
+            return Ok(updatedProject);
         }
     }
 }

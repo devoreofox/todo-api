@@ -1,6 +1,6 @@
 ﻿namespace TodoAPI.Models
 {
-    public class TodoProject
+    public record TodoProject
     {
         public Guid Id { get; init; }
         public string Name { get; init; } = string.Empty;
