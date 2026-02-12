@@ -64,5 +64,17 @@ namespace TodoAPI.Controllers
             _projects[index] = updatedProject;
             return Ok(updatedProject);
         }
+
+        [HttpDelete("{id:guid}")]
+        public IActionResult Delete(Guid id)
+        {
+            var existingProject = _projects.FirstOrDefault(p => p.Id == id);
+            if (existingProject is null)
+            {
+                return NotFound();
+            }
+            _projects.Remove(existingProject);
+            return NoContent();
+        }
     }
 }
