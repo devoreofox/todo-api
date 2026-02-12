@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using TodoAPI.Models;
 
 namespace TodoAPI.Controllers
 {
@@ -7,9 +8,29 @@ namespace TodoAPI.Controllers
     public class TodoProjectsController : ControllerBase
     {
         [HttpGet]
-        public IActionResult Hello()
+        public IActionResult Get()
         {
-            return Ok("Hello World");
+            var projects = new List<TodoProject>
+            {
+                new TodoProject
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "Project 1",
+                    Description = "Description for project 1",
+                    CreatedAt = DateTimeOffset.UtcNow,
+                    UpdatedAt = DateTimeOffset.UtcNow
+                },
+                new TodoProject
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "Project 2",
+                    Description = "Description for project 2",
+                    CreatedAt = DateTimeOffset.UtcNow,
+                    UpdatedAt = DateTimeOffset.UtcNow
+                }
+            };
+
+            return Ok(projects);
         }
     }
 }
