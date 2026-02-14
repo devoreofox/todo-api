@@ -62,7 +62,7 @@ namespace TodoAPI.Controllers
             {
                 Name = project.Name,
                 Description = project.Description ?? string.Empty,
-                Items = project.Items,
+                Items = existingProject.Items,
                 UpdatedAt = DateTimeOffset.UtcNow
             };
 
