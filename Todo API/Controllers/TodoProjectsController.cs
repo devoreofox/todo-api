@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using TodoAPI.Data;
 using TodoAPI.Models;
+using static TodoAPI.Data.MemoryDataStore;
 
 namespace TodoAPI.Controllers
 {
@@ -8,18 +10,16 @@ namespace TodoAPI.Controllers
     public class TodoProjectsController : ControllerBase
     {
 
-        private static readonly List<TodoProject> _projects = new();
-
         [HttpGet]
         public IActionResult GetProjects()
         {
-            return Ok(_projects);
+            return Ok(MemoryDataStore.Projects);
         }
 
         [HttpGet("{id:guid}")]
         public IActionResult GetProject(Guid id)
         {
-            var project = _projects.FirstOrDefault(p => p.Id == id);
+            var project = MemoryDataStore.Projects.FirstOrDefault(p => p.Id == id);
             if (project is null) return NotFound();
 
             return Ok(project);
@@ -39,7 +39,7 @@ namespace TodoAPI.Controllers
                 UpdatedAt = DateTimeOffset.UtcNow
             };
 
-            _projects.Add(newProject);
+            MemoryDataStore.Projects.Add(newProject);
 
             return CreatedAtAction(nameof(GetProject), new { id = newProject.Id }, newProject);
         }
@@ -48,7 +48,7 @@ namespace TodoAPI.Controllers
         public IActionResult Put(Guid id, [FromBody] TodoProject project)
         {
 
-            var existingProject = _projects.FirstOrDefault(p => p.Id == id);
+            var existingProject = MemoryDataStore.Projects.FirstOrDefault(p => p.Id == id);
             if (existingProject is null)
             {
                 return NotFound();
@@ -66,20 +66,20 @@ namespace TodoAPI.Controllers
                 UpdatedAt = DateTimeOffset.UtcNow
             };
 
-            var index = _projects.IndexOf(existingProject);
-            _projects[index] = updatedProject;
+            var index = MemoryDataStore.Projects.IndexOf(existingProject);
+            MemoryDataStore.Projects[index] = updatedProject;
             return Ok(updatedProject);
         }
 
         [HttpDelete("{id:guid}")]
         public IActionResult Delete(Guid id)
         {
-            var existingProject = _projects.FirstOrDefault(p => p.Id == id);
+            var existingProject = MemoryDataStore.Projects.FirstOrDefault(p => p.Id == id);
             if (existingProject is null)
             {
                 return NotFound();
             }
-            _projects.Remove(existingProject);
+            MemoryDataStore.Projects.Remove(existingProject);
             return NoContent();
         }
     }

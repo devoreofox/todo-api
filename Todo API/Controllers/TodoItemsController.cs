@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using TodoAPI.Models;
+using TodoAPI.Data;
 
 namespace TodoAPI.Controllers
 {
@@ -8,11 +9,14 @@ namespace TodoAPI.Controllers
     public class TodoItemsController : ControllerBase
     {
 
-
         [HttpGet]
-        public IActionResult GetItems()
+        public IActionResult GetItems(Guid projectId)
         {
-            return Ok("Hello World");
+            var project = MemoryDataStore.Projects.FirstOrDefault(p => p.Id == projectId);
+
+            if (project is null) return NotFound();
+
+            return Ok(project.Items);
         }
     }
 }
