@@ -11,18 +11,24 @@ namespace TodoAPI.Controllers
         private static readonly List<TodoProject> _projects = new();
 
         [HttpGet]
-        public IActionResult Get()
+        public IActionResult GetProjects()
         {
             return Ok(_projects);
+        }
+
+        [HttpGet("{id:guid}")]
+        public IActionResult GetProject(Guid id)
+        {
+            var project = _projects.FirstOrDefault(p => p.Id == id);
+            if (project is null) return NotFound();
+
+            return Ok(project);
         }
 
         [HttpPost]
         public IActionResult Post([FromBody] TodoProject project)
         {
-            if (string.IsNullOrWhiteSpace(project.Name))
-            {
-                return BadRequest("Project name is required.");
-            }
+            if (string.IsNullOrWhiteSpace(project.Name)) return BadRequest("Project name is required.");
 
             var newProject = new TodoProject
             {
@@ -35,7 +41,7 @@ namespace TodoAPI.Controllers
 
             _projects.Add(newProject);
 
-            return Created(nameof(Get), newProject);
+            return CreatedAtAction(nameof(GetProject), new { id = newProject.Id }, newProject);
         }
 
         [HttpPut("{id:guid}")]
