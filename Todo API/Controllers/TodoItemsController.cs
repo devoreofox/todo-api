@@ -85,5 +85,21 @@ namespace TodoAPI.Controllers
             return Ok(updatedItem);
         }
 
+        [HttpDelete("{id:guid}")]
+        public IActionResult Delete(Guid projectId, Guid id)
+        {
+            var project = MemoryDataStore.Projects.FirstOrDefault(p => p.Id == projectId);
+            if (project is null) return NotFound();
+
+            var existingItem = project.Items.FirstOrDefault(i => i.Id == id);
+            if (existingItem is null) return NotFound();
+
+            project.Items.Remove(existingItem);
+
+            var projectIndex = MemoryDataStore.Projects.IndexOf(project);
+            MemoryDataStore.Projects[projectIndex] = project with { UpdatedAt = DateTimeOffset.UtcNow };
+
+            return NoContent(); 
+        }
     }
 }
