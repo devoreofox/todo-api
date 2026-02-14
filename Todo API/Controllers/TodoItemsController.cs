@@ -33,15 +33,19 @@ namespace TodoAPI.Controllers
             {
                 Id = Guid.NewGuid(),
                 Name = item.Name,
+                Description = item.Description,
                 IsComplete = false,
                 DueDate = item.DueDate,
                 CreatedAt = DateTimeOffset.UtcNow,
                 UpdatedAt = DateTimeOffset.UtcNow
             };
 
+            var index = MemoryDataStore.Projects.IndexOf(project);
+            MemoryDataStore.Projects[index] = project with { UpdatedAt = DateTimeOffset.UtcNow };
+
             project.Items.Add(newItem);
 
-            return CreatedAtAction(nameof(GetItems), new { projectId = projectId }, newItem);
+            return CreatedAtAction(nameof(GetItems), new { projectId }, newItem);
         }
     }
 }
